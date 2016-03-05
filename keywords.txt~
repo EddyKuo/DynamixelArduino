@@ -1,0 +1,85 @@
+#######################################
+# Syntax Coloring Map For Keyboard
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+dxl	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+getError		KEYWORD2
+
+ping			KEYWORD2
+action			KEYWORD2
+reset			KEYWORD2
+reboot			KEYWORD2
+readModelNumber		KEYWORD2
+readFirmware		KEYWORD2
+setId			KEYWORD2
+readId			KEYWORD2
+setBaudRate		KEYWORD2
+readBaudRate		KEYWORD2
+setReturnDelayTime	KEYWORD2
+readReturnDelayTime	KEYWORD2
+setCWAngleLimit		KEYWORD2
+setCCWAngleLimit	KEYWORD2
+readCWAngleLimit	KEYWORD2
+readCCWAngleLimit	KEYWORD2
+setMaxTemperature	KEYWORD2
+readMaxTemperature	KEYWORD2
+setMinVoltage		KEYWORD2
+readMinVoltage		KEYWORD2
+setMaxVoltage		KEYWORD2
+readMaxVoltage		KEYWORD2
+setMaxTorque		KEYWORD2
+readMaxTorque		KEYWORD2
+setStatusReturnLevel	KEYWORD2
+readStatusReturnLevel	KEYWORD2
+setAlarmLed		KEYWORD2
+readAlarmLed		KEYWORD2
+setAlarmShutdown	KEYWORD2
+readAlarmShutdown	KEYWORD2
+setTorqueEnable		KEYWORD2
+readTorqueEnable	KEYWORD2
+setLedEnable		KEYWORD2
+readLedEnable		KEYWORD2
+setCWComplianceMargin	KEYWORD2
+readCWComplianceMargin	KEYWORD2
+setCCWComplianceMargin	KEYWORD2
+readCCWComplianceMargin	KEYWORD2
+setCWComplianceSlope	KEYWORD2
+readCWComplianceSlope	KEYWORD2
+setCCWComplianceSlope	KEYWORD2
+readCCWComplianceSlope	KEYWORD2
+setGoalPosition		KEYWORD2
+setGoalPositionAtSpeed	KEYWORD2
+setMovingSpeed		KEYWORD2
+setTorqueLimit		KEYWORD2
+readPresentPosition	KEYWORD2
+readPresentSpeed	KEYWORD2
+readPresentLoad		KEYWORD2
+readVoltage		KEYWORD2
+readTemperature		KEYWORD2
+isRegistered		KEYWORD2
+isMoving		KEYWORD2
+setEEPROMLock		KEYWORD2
+isEEPROMLock		KEYWORD2
+setPunch		KEYWORD2
+readPunch		KEYWORD2
+readDxlWord		KEYWORD2
+readDxlByte		KEYWORD2
+readDxl			KEYWORD2
+writeDxl		KEYWORD2
+writeDxlData		KEYWORD2
+writeDxlRegData		KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+DXL_ERR_SUCCESS	LITERAL1
