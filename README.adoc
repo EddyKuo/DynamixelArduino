@@ -1,4 +1,4 @@
-= SoftHalfDuplexSerial Library for Arduino =
+= DynamixelArduino Library for Arduino =
 
  This library implement all the required operation to drive Dynamixel servo,
  using only one wire.
