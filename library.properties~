@@ -1,9 +1,0 @@
-name=DynamixelArduino
-version=1.0.0
-author=Akira
-maintainer=Akira <akira@>
-sentence=Use to communicate with Dynamixel servos. 
-paragraph=This library use SoftHalfDuplexSerial. It require no extra harware, it only use one pin to communicate with Dynamixel
-category=Communication
-url=http://
-architectures=*

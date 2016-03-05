@@ -25,6 +25,9 @@ This library is free software; you can redistribute it and/or
   - The pin should support change interrupts (see halfDuplexSerial lib)
   - Baudrate is limited (57 600bps ~ 115 200bps for 16Mhz Arduino board)
   - 5V Arduino Board (I didn't try with 3.3V board as I didn't have one)
+
+For more information, please visit :
+https://github.com/akira215/DynamixelArduino
 */
 
 //

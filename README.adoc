@@ -12,7 +12,7 @@ You can customize servo control by editing the DynamixelArduinoConfig.h file.
 The librarie has been written and tested with AX-12 servo, it should work with other Dynamixel servos (including MX TTL series) with some adjustement (Compliance settings are not available in MX series as it is drive by PID gain).
 
 For more information about this library please visit us at
-http://
+https://github.com/akira215/DynamixelArduino
 
 == License ==
 
