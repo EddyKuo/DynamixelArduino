@@ -1,5 +1,5 @@
 /*
-DynamixelArduinoConfig.h 
+DynamixelConfig.h 
 Written by Akira 
 
 This library is free software; you can redistribute it and/or
@@ -18,14 +18,13 @@ This library is free software; you can redistribute it and/or
  
  *****************************************************************************
  Decription:
- This file contains all definition to drive Dynamixel servos (actually AX servo and most MX functions will work).
- You should modify the value according to your servo specification. Take care that invalid address or command can lead to unpredictible results
- Please visit http://support.robotis.com/en/product/dynamixel/ax_series/dxl_ax_actuator.htm for AX actuators description
- and http://support.robotis.com/en/product/dynamixel/dxl_communication.htm to understand Dynamixel communication protocol
+ This file contains all definition to drive Dynamixel servos.
+ You should modify the value according to your servo specification.
+ Please visit http://support.robotis.com/en/product/dynamixel/dxl_communication.htm to understand Dynamixel communication protocol
 */
 
-#ifndef DynamixelArduinoConfig_h
-#define DynamixelArduinoConfig_h
+#ifndef DynamixelConfig_h
+#define DynamixelConfig_h
 
 /******************************************************************************
 * Errors
@@ -88,12 +87,9 @@ This library is free software; you can redistribute it and/or
 #define DXL_ADD_ALARM_LED             (0x11)
 #define DXL_ADD_ALARM_SHUTDOWN        (0x12)
 
+
 #define DXL_ADD_TORQUE_ENABLE         (0x18)
 #define DXL_ADD_LED                   (0x19)
-#define DXL_ADD_CW_COMPLIANCE_MARGIN  (0x1A)
-#define DXL_ADD_CCW_COMPLIANCE_MARGIN (0x1B)
-#define DXL_ADD_CW_COMPLIANCE_SLOPE   (0x1C)
-#define DXL_ADD_CCW_COMPLIANCE_SLOPE  (0x1D)
 #define DXL_ADD_GOAL_POSITION         (0x1E)
 #define DXL_ADD_MOVING_SPEED          (0X20)
 #define DXL_ADD_TORQUE_LIMIT          (0X22)
@@ -107,6 +103,7 @@ This library is free software; you can redistribute it and/or
 #define DXL_ADD_LOCK                  (0X2F)
 #define DXL_ADD_PUNCH                 (0X30)
 
+
 /**************************************************************/
 
-#endif // DynamixelArduinoConfig_h
+#endif // DynamixelConfig_h

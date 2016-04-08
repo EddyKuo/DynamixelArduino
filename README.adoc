@@ -1,15 +1,13 @@
 = DynamixelArduino Library for Arduino =
 
- This library implement all the required operation to drive Dynamixel servo,
- using only one wire.
- It required the halfDuplexSerial lib (SoftHalfDuplexSerial.cpp & .h)
+ This library implement all the required operation to drive Dynamixel servo.T his library is divided in 3 classes : dxl, dxlAx, dxlMx. As Dynamixel use half duplex communication, a halfDuplexSerial object should be passed as a constructor argument.
+ This could be achieved using the halfDuplexSerial lib (soft, usig only one wire, or hard, using Tx, Rx and dir pin)
  Limitations:
-  - The pin should support change interrupts (see halfDuplexSerial lib)
-  - Baudrate is limited (57 600bps ~ 115 200bps for 16Mhz Arduino board)
-  - 5V Arduino Board (I didn't try with 3.3V board as I didn't have one)
+   - Baudrate is limited 57 600bps ~ 115 200bps for 16Mhz Arduino board with softHalfDuplexSerial, and ~ 400 000bps for 16Mhz Arduino board with hardHalfDuplexSerial
+  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
 
-You can customize servo control by editing the DynamixelArduinoConfig.h file.
-The librarie has been written and tested with AX-12 servo, it should work with other Dynamixel servos (including MX TTL series) with some adjustement (Compliance settings are not available in MX series as it is drive by PID gain).
+You can customize servo control by editing the DynamixelConfig.h file.
+The librarie has been written and tested with AX-12 servo & MX-64R, it should work with other Dynamixel servos.
 
 For more information about this library please visit us at
 https://github.com/akira215/DynamixelArduino

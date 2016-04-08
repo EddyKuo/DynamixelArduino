@@ -1,8 +1,8 @@
 /*
-DynamixelArduino.h
+Dynamixel.h
 Written by Akira
 
-This library is free software; you can redistribute it and/or
+ This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
@@ -19,50 +19,48 @@ This library is free software; you can redistribute it and/or
  *****************************************************************************
  Decription:
  This library implement all the required operation to drive Dynamixel servo,
- using only one wire.
- It required the halfDuplexSerial lib (SoftHalfDuplexSerial.cpp & .h)
+ Please visit http://support.robotis.com/en/product/dynamixel/dxl_communication.htm to understand Dynamixel communication protocol
+
  Limitations:
-  - The pin should support change interrupts (see halfDuplexSerial lib)
-  - Baudrate is limited (57 600bps ~ 115 200bps for 16Mhz Arduino board)
-  - 5V Arduino Board (I didn't try with 3.3V board as I didn't have one)
-
-For more information, please visit :
-https://github.com/akira215/DynamixelArduino
+  - Baudrate is limited 57 600bps ~ 115 200bps for 16Mhz Arduino board with softHalfDuplexSerial, and ~ 400 000bps for 16Mhz Arduino board with hardHalfDuplexSerial
+  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
 */
-#ifndef DynamixelArduino_h
-#define DynamixelArduino_h
+#ifndef Dynamixel_h
+#define Dynamixel_h
 
-#include "DynamixelArduinoConfig.h"
 #include <Arduino.h>
-
-#include <SoftHalfDuplexSerial.h>
+#include <HardHalfDuplexSerial.h>
+#include <DynamixelConfig.h>
 
 
 /******************************************************************************
 * Definitions
 ******************************************************************************/
 
-class dxl : public halfDuplexSerial
+class dxl
 {
 private:
-  unsigned int    _delayForOneByte;
-  unsigned short  _error;
+    halfDuplexSerial* _port;    // Serial port to be used to communicate with dynamixel
 
-  bool waitForStatus(uint8_t nByteToReceive);
+  unsigned short  _error;
+  void serialFlush();
 
 public:
   
   // public methods
-  dxl(const uint8_t dataPin);
+  dxl(halfDuplexSerial* port);
   ~dxl();
   void begin(const unsigned long speed);
-
   unsigned short getError() const { return _error; }
 
   unsigned short ping(const byte  ID);    // ping the servo
   unsigned short action(const byte  ID);  // Excecute action written in REG_WRITE servo register
   unsigned short reset(const byte  ID);   // Reset the servo to factory default setting
   unsigned short reboot(const byte  ID);  // Reboot the servo
+
+  //
+  //  EEPROM commands
+  //
 
   unsigned short readModelNumber(const byte ID);
   byte readFirmware(const byte ID);
@@ -103,24 +101,15 @@ public:
   unsigned short setAlarmShutdown(const byte  ID, const byte Status);
   byte readAlarmShutdown(const byte ID);
 
+  //
+  //  RAM commands
+  //
   unsigned short setTorqueEnable(const byte  ID, const bool Status);
   bool readTorqueEnable(const byte ID);
 
   unsigned short setLedEnable(const byte  ID, const bool Status);
   bool readLedEnable(const byte  ID);
 
-  unsigned short setCWComplianceMargin(const byte  ID, const byte margin);
-  byte readCWComplianceMargin(const byte ID);
-
-  unsigned short setCCWComplianceMargin(const byte  ID, const byte margin);
-  byte readCCWComplianceMargin(const byte ID);
-
-  unsigned short setCWComplianceSlope(const byte  ID, const byte slope);
-  byte readCWComplianceSlope(const byte ID);
-
-  unsigned short setCCWComplianceSlope(const byte  ID, const byte slope);
-  byte readCCWComplianceSlope(const byte ID);
-  
   unsigned short setGoalPosition(const byte ID, const short Position);
   unsigned short setGoalPositionAtSpeed(const byte ID, const short Position, const short Speed);
   unsigned short setMovingSpeed(const byte ID, const short Speed);
@@ -141,7 +130,6 @@ public:
   unsigned short setPunch(const byte  ID, const unsigned short current);
   unsigned short readPunch(const byte ID);
 
-
   // Low level public methods
   unsigned short readDxlWord(const byte ID, const byte dxlAddress);
   byte readDxlByte(const byte ID, const byte dxlAddress);
@@ -153,4 +141,4 @@ public:
   
 };
 
-#endif // DynamixelArduino_h
+#endif // Dynamixel_h

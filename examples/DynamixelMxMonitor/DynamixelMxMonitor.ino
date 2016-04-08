@@ -1,64 +1,12 @@
-/*
-DynamixelMonitor.ino
-Written by Akira 
 
-This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- 
- This library is distributed in the hope that it will be useful,  
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- 
- *****************************************************************************
- Decription:
- This is an example using DynamixelArduino lib.
- Hardware is quite simple : 
-  - connect servo data pin to pin 8 (Arduino Leonardo)
-  - servo GND to Arduino GND
-  - servo VDD should be connected to 9~12V power supply
-  - take care that power supply should be grounded with Arduino GND
-  
+#include <HardHalfDuplexSerial.h>
+#include <DynamixelMx.h>
 
-To operate, simply construct a dxl object the only argument is the data pin used to communicate (see SoftHalfDuplexSerial lib limitations)
-dxl dxlCom(8); // data pin 8
 
-Then start communication with servo using dxl::begin(baudrate)
-dxlCom.begin(57600);
- Baudrate is set to 57600bps for safety (please check that the servo is also set to this baudrate)
-  
- To drive servo, open Serial Monitor in Arduino IDE and send command (upper part of the window):
-  - "ID2" change PC operation to servo ID 2 for example
-  - "ping" will ping servo (ID previously entered, by default PC will operate servo ID 1)
-  - "action" will drive the reg command of the servo (see dynamixel doc)
-  - "reboot" will reboot servo (ID previously entered, by default PC will operate servo ID 1)
-  - "model" will return the servo model
-  - "firmware" will return the servo firmware
-  - "setID3" will set the servo ID (the one operated by the PC) to ID 3
-  - "led1" will turn on the led ("led0" to turn off)
-  - "move100" will move the servo to an angle of 100 (see dynamixel doc). It will also print the present position of servo during the movement.
-  - "speed300" will set the speed to 300 (see dynamixel doc). Note that in DynamixelArduino lib provide a dxl::setGoalPositionAtSpeed(ID, position, speed) method
-  - "torque20" will set up the servo torque to 20 (see dynamixel doc)
-  - "voltage" will return the voltage of the servo (to be divided by 10 to get it in Volt)
-  - "temperature" will return the temperature of the servo (in celsius)
-  - "regmove100" will load an reg action. It has been provide to illustrate how to use advanced use of the lib (type "action" to trigger the reg action)
+dxlMx dxlCom(&hdSerial1); //  using Serial1 (Tx 18, Rx 19)
 
-All the command send in the serial monitor should be follow by a hit on the enter key. Please not that there is no space between command and arguments
-The result of the command (including catching error) is return in the serial monitor.
-
-*/
-
-#include <DynamixelArduino.h>
-
-dxl dxlCom(8); // data pin 8
-String readString;
-int id = 1;
+String readString;        // Input string from serial monitor
+int id = 2;               // Default servo ID   
 
 void printServoId(String msg);
 
@@ -73,16 +21,18 @@ void setup() {
 
   Serial.println("Starting COM!");
 
-  dxlCom.begin(57600); // set the data rate for the SoftwareSerial port (servo communication)
+  pinMode(19,INPUT_PULLUP);  // To be replaced by hardware pull up
+  hdSerial1.setDirPin(53);   // dirPin pin 53, 
+
+  // set the data rate for servo communication
+  dxlCom.begin(400000); 
   
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-void loop() { // run over and over
-  
- /*a if (dxlCom.isListening()) 
-    Serial.println("dxl listening!");*/
+void loop()
+{ 
 
  while (Serial.available()) {
     char c = Serial.read();  //gets one byte from serial buffer
@@ -156,8 +106,10 @@ void loop() { // run over and over
       unsigned short Position = readString.toInt();  //convert readString into a number
       printServoId("Moving ");
       printDxlError(dxlCom.setGoalPosition(id,Position));
+      delayMicroseconds(600); // To be adapt to return delay time
       while (dxlCom.isMoving(id))
       {
+        delayMicroseconds(600); // To be adapt to return delay time
         Serial.println(dxlCom.readPresentPosition(id));
         delay(10);
       }
@@ -183,7 +135,7 @@ void loop() { // run over and over
     }
     else if (readString.startsWith("temperature"))
     {
-      printServoId("Temperature in celsius of");
+      printServoId("Temperature of");
       Serial.println(dxlCom.readTemperature(id));
     }
     else if (readString.startsWith("regmove"))
@@ -214,35 +166,37 @@ void printDxlError(unsigned short dxlError)
     Serial.println("OK");
   else
   {
-    if (dxlError && DXL_ERR_VOLTAGE)
+    if (dxlError & DXL_ERR_VOLTAGE)
       Serial.print("voltage out of range-");
-    if (dxlError && DXL_ERR_ANGLE)
+    if (dxlError & DXL_ERR_ANGLE)
       Serial.print("angle out of range-");
-    if (dxlError && DXL_ERR_OVERHEATING)
+    if (dxlError & DXL_ERR_OVERHEATING)
       Serial.print("overheating-");
-    if (dxlError && DXL_ERR_RANGE)
+    if (dxlError & DXL_ERR_RANGE)
       Serial.print("cmd out of range-");
-    if (dxlError && DXL_ERR_TX_CHECKSUM)
+    if (dxlError & DXL_ERR_TX_CHECKSUM)
       Serial.print("Tx CRC invalid-");
-    if (dxlError && DXL_ERR_OVERLOAD )
+    if (dxlError & DXL_ERR_OVERLOAD )
       Serial.print("overload-");
-    if (dxlError && DXL_ERR_INSTRUCTION )
+    if (dxlError & DXL_ERR_INSTRUCTION )
       Serial.print("undefined instruction-");
-    if (dxlError && DXL_ERR_TX_FAIL )
+    if (dxlError & DXL_ERR_TX_FAIL )
       Serial.print("Tx No header-");
-    if (dxlError && DXL_ERR_RX_FAIL )
+    if (dxlError & DXL_ERR_RX_FAIL )
       Serial.print("Rx No header-");
-    if (dxlError && DXL_ERR_TX_ERROR  )
+    if (dxlError & DXL_ERR_TX_ERROR  )
       Serial.print("Tx error-");
-    if (dxlError && DXL_ERR_RX_WAITING  )
+    if (dxlError & DXL_ERR_RX_WAITING  )
       Serial.print("Rx waiting-");  // Not implemented yet
-    if (dxlError && DXL_ERR_RX_TIMEOUT)
+    if (dxlError & DXL_ERR_RX_TIMEOUT)
       Serial.print("timeout-");
-    if (dxlError && DXL_ERR_RX_CORRUPT)
+    if (dxlError & DXL_ERR_RX_CORRUPT)
       Serial.print("Rx CRC invalid-");
-    if (dxlError && DXL_ERR_ID )
+    if (dxlError & DXL_ERR_ID )
       Serial.print("Wrong ID answered-"); // ?? Hardware issue
     Serial.println();
   }
 }
+
+
 

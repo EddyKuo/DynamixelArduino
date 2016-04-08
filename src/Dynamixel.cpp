@@ -1,8 +1,8 @@
 /*
-DynamixelArduino.cpp
-Written by Akira 
+Dynamixel.cpp
+written by Akira 
 
-This library is free software; you can redistribute it and/or
+ This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
@@ -19,27 +19,25 @@ This library is free software; you can redistribute it and/or
  *****************************************************************************
  Decription:
  This library implement all the required operation to drive Dynamixel servo,
- using only one wire.
- It required the halfDuplexSerial lib (SoftHalfDuplexSerial.cpp & .h)
- Limitations:
-  - The pin should support change interrupts (see halfDuplexSerial lib)
-  - Baudrate is limited (57 600bps ~ 115 200bps for 16Mhz Arduino board)
-  - 5V Arduino Board (I didn't try with 3.3V board as I didn't have one)
+ Please visit http://support.robotis.com/en/product/dynamixel/dxl_communication.htm to understand Dynamixel communication protocol
 
-For more information, please visit :
-https://github.com/akira215/DynamixelArduino
+ Limitations:
+  - Baudrate is limited 57 600bps ~ 115 200bps for 16Mhz Arduino board with softHalfDuplexSerial, and ~ 400 000bps for 16Mhz Arduino board with hardHalfDuplexSerial
+  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
 */
 
 //
 // Includes
 //
-#include <DynamixelArduino.h>
+#include <Dynamixel.h>
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //
 // Constructor
 //
-dxl::dxl(const uint8_t dataPin) : 
-  halfDuplexSerial(dataPin)
+dxl::dxl(halfDuplexSerial* port) :
+ _port(port)
 {
   
 }
@@ -49,13 +47,12 @@ dxl::dxl(const uint8_t dataPin) :
 //
 dxl::~dxl()
 {
-  end();
+  _port->end();
 }
 
 void dxl::begin(const unsigned long speed)
 {
-  _delayForOneByte = (1400000 / speed); // safety try to adjust this value. 1 000 000 µs * 10 (8 bit + 1 start + 1 stop) rounded up 
-  halfDuplexSerial::begin(speed); 
+  _port->begin(speed);
 }
 
 //
@@ -170,26 +167,6 @@ unsigned short dxl::setLedEnable(const byte  ID, const bool Status)
 bool dxl::readLedEnable(const byte  ID )
 { return readDxlByte(ID, DXL_ADD_LED); }
 
-unsigned short dxl::setCWComplianceMargin(const byte  ID, const byte margin)
-{ return writeDxlData(ID, DXL_ADD_CW_COMPLIANCE_MARGIN , &margin, 1 );}
-byte dxl::readCWComplianceMargin(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CW_COMPLIANCE_MARGIN);}
-
-unsigned short dxl::setCCWComplianceMargin(const byte  ID, const byte margin)
-{ return writeDxlData(ID, DXL_ADD_CCW_COMPLIANCE_MARGIN , &margin, 1 );}
-byte dxl::readCCWComplianceMargin(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CCW_COMPLIANCE_MARGIN);}
-
-unsigned short dxl::setCWComplianceSlope(const byte  ID, const byte slope)
-{ return writeDxlData(ID, DXL_ADD_CW_COMPLIANCE_SLOPE , &slope, 1 );}
-byte dxl::readCWComplianceSlope(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CW_COMPLIANCE_SLOPE);}
-
-unsigned short dxl::setCCWComplianceSlope(const byte  ID, const byte slope)
-{ return writeDxlData(ID, DXL_ADD_CCW_COMPLIANCE_SLOPE , &slope, 1 );}
-byte dxl::readCCWComplianceSlope(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CCW_COMPLIANCE_SLOPE);}
-
 unsigned short  dxl::setGoalPosition(const byte ID, const short Position)
 { return writeDxlData(ID, DXL_ADD_GOAL_POSITION, (const byte*) &Position, 2 );}   
 
@@ -217,7 +194,7 @@ unsigned short dxl::readPresentLoad(const byte ID)
 byte  dxl::readVoltage(const byte ID)
 { return readDxlByte(ID, DXL_ADD_PRESENT_VOLTAGE); } 
 
-byte  dxl::readTemperature(const byte ID)
+byte dxl::readTemperature(const byte ID)
 { return readDxlByte(ID, DXL_ADD_PRESENT_TEMPERATURE); }  
 
 bool dxl::isRegistered(const byte ID)
@@ -257,44 +234,45 @@ unsigned short dxl::readDxlWord(const byte ID, const byte dxlAddress)
   return value;
 }
 
+
 unsigned short dxl::readDxl(const byte ID, const byte dxlAddress, byte *result, const byte nByteToBeRead)
 {  
   //const byte txDataLength =  2 + 2 ;    // length is "number of parameters N +2"
   byte i;
   byte check = 0;             // used to compute checksum
   byte header[5];             // 2 start byte + ID + length + Error
- // byte result[nByteToBeRead];  
 
   byte Checksum = (~(ID + /*txDataLength*/ 4  + DXL_READ_DATA + dxlAddress + nByteToBeRead)) & 0xFF;
   byte sentence[] ={ DXL_START, DXL_START, ID, /*txDataLength*/ 4, DXL_READ_DATA, dxlAddress, nByteToBeRead, Checksum};
   
-  flushRx(); // clear the Rx buffer
+  serialFlush(); // clear the Rx buffer
 
   _error = 0;  // purge error
-  // Checksum = 0; //
-        
 
-  write(sentence, /*txDataLength + 4*/ 8); // txDataLength + 2 bytes header + 1 byte ID + 1 byte Checksum
+  _port->write(sentence, /*txDataLength + 4*/ 8); // txDataLength + 2 bytes header + 1 byte ID + 1 byte Checksum
 
-  if(!waitForStatus(nByteToBeRead + 6))   // wait for the uncoming byte
-    _error |=  DXL_ERR_RX_TIMEOUT;        // 2 header byte + byte to be read + ID + length + Error + checksum
-   
+  // Blocking function : wait that all bytes to be sent
+  while(_port->isTransmitting()); 
+
+  // Blocking function : wait all byte of the answer to be received. Timeout is computed with serial baud speed
+  if(!_port->waitByteToReceived(6 + nByteToBeRead))
+    return DXL_ERR_RX_TIMEOUT;
 
   // Read the incoming bytes
-  header[0] = read();   // 2 Starts Bytes
-  header[1] = read();   
+  header[0] = _port->read();   // 2 Starts Bytes
+  header[1] = _port->read();   
     
-  header[2] = read();   // Servo ID
-  header[3] = read();   // Length
-  header[4] = read();   // Error
+  header[2] = _port->read();   // Servo ID
+  header[3] = _port->read();   // Length
+  header[4] = _port->read();   // Error
 
   for (i = 0; i < nByteToBeRead; i++)
   {
-    result[i] = read();
+    result[i] = _port->read();
     check +=  result[i];
   }
 
-  Checksum  = read();   // Checksum
+  Checksum  = _port->read();   // Checksum
   
   if (!( ( header[0] == 255) & ( header[1]  == 255) ))
     _error |=  DXL_ERR_RX_FAIL;     // No header found
@@ -313,30 +291,11 @@ unsigned short dxl::readDxl(const byte ID, const byte dxlAddress, byte *result, 
 }
 
 
-unsigned short dxl::writeDxlRegData(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten )
-{
-  byte sentence[1+ nByteToBeWritten];
-  sentence[0] = dxlAddress;
-  for (byte i = 0; i < nByteToBeWritten; i++)
-    sentence[i+1] = params[i];
-  return ( writeDxl(ID, DXL_REG_WRITE, sentence, nByteToBeWritten + 1 ));
-}
-
-unsigned short dxl::writeDxlData(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten )
-{
-  byte sentence[1+ nByteToBeWritten];
-  sentence[0] = dxlAddress;
-  for (byte i = 0; i < nByteToBeWritten; i++)
-    sentence[i+1] = params[i];
-  return ( writeDxl(ID, DXL_WRITE_DATA, sentence, nByteToBeWritten + 1 ));
-}
-
 unsigned short dxl::writeDxl(const byte ID, const byte dxlCommand, const byte *params, const byte nByteToBeWritten )
 {  
-
   byte i;
   const byte txDataLength =  nByteToBeWritten + 2 ;    // length is "number of parameters N +2"
-  byte result[5];  // 2 start byte + ID + length + Error
+  byte result[5];  // 2 start byte + ID + length + Error + Checksum
   byte sentence[6 + nByteToBeWritten];
   byte Checksum = 0;
 
@@ -355,26 +314,26 @@ unsigned short dxl::writeDxl(const byte ID, const byte dxlCommand, const byte *p
   
   sentence[i+5] = Checksum;
 
-  flushRx(); // clear the Rx buffer
+  serialFlush(); // clear the Tx & Rx buffer
 
   _error = 0;  // purge error
-  // Checksum = 0; //
-        
-  write(sentence, txDataLength + 4); // txDataLength + 2 bytes header + 1 byte ID + 1 byte Checksum
 
-  if(!waitForStatus(6))   // wait for the uncoming byte
-    _error |=  DXL_ERR_RX_TIMEOUT;        // 2 header byte + byte to be read + ID + length + Error + checksum 
-
-  // Read the incoming bytes
-  result[0] = read();   // 2 Starts Bytes
-  result[1] = read();   
+  _port-> write(sentence, txDataLength + 4); // txDataLength + 2 bytes header + 1 byte ID + 1 byte Checksum
     
-  result[2] = read();   // Servo ID
-  result[3] = read();   // Length
-  result[4] = read();   // Error
+  // Blocking function : wait that all bytes to be sent
+  while(_port->isTransmitting()); 
+ 
+  // Blocking function : wait all byte of the answer to be received. Timeout is computed with serial baud speed
+  if(!_port->waitByteToReceived(6))
+    return DXL_ERR_RX_TIMEOUT;
+        
+  result[0] = _port->read();  // 2 Starts Bytes
+  result[1] = _port->read();
+  result[2] = _port->read();  // Servo ID
+  result[3] = _port->read();  // Length
+  result[4] = _port->read();  // Error
+  result[5] = _port->read();  // Checksum
 
-  Checksum  = read();   // Checksum
-  
   if (!( ( result[0] == 255) & ( result[1]  == 255) ))
     _error |=  DXL_ERR_TX_FAIL;     // No header found
 
@@ -384,32 +343,36 @@ unsigned short dxl::writeDxl(const byte ID, const byte dxlCommand, const byte *p
   if (result[4]!=0)
     _error |=result[4];             // Servo send an error we push it. To catch it error mask should be used
 
-  if (Checksum != ((~(result[2] + result[3]  + result[4] )) & 0xFF ))
+  if (/*Checksum */result[5]!= ((~(result[2] + result[3]  + result[4] )) & 0xFF ))
     _error |=DXL_ERR_RX_CORRUPT;    // Checksum error
 
   return getError();               // Returns the read value
 }
 
- 
+unsigned short dxl::writeDxlRegData(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten )
+{
+  byte sentence[1+ nByteToBeWritten];
+  sentence[0] = dxlAddress;
+  for (byte i = 0; i < nByteToBeWritten; i++)
+    sentence[i+1] = params[i];
+  return ( writeDxl(ID, DXL_REG_WRITE, sentence, nByteToBeWritten + 1 ));
+}
+
+unsigned short dxl::writeDxlData(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten )
+{
+  byte sentence[1+ nByteToBeWritten];
+  sentence[0] = dxlAddress;
+  for (byte i = 0; i < nByteToBeWritten; i++)
+    sentence[i+1] = params[i];
+  return ( writeDxl(ID, DXL_WRITE_DATA, sentence, nByteToBeWritten + 1 ));
+} 
 //
 // Private Methods
 //
-
-
-bool dxl::waitForStatus(uint8_t nByteToReceive)
+void dxl::serialFlush()
 {
-  delayMicroseconds( 2 * DXL_RETURN_DELAY_TIME); // wait for the return delay (transmit & receive)
-  delayMicroseconds( ( nByteToReceive) * _delayForOneByte ); // wait for all the forecast byte (add one for safety) 
-  
-  if(available() >= nByteToReceive)
-    return true;
-  else
-    delayMicroseconds( nByteToReceive * _delayForOneByte ); // retry
-    
-    // TO BE CHANGED FOR LET THE RETRY WORK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
-    //return (available() >= nByteToReceive);
-
-  return false;
-}
+  while(_port->available() > 0) 
+    _port->read();
+}   
 
 
