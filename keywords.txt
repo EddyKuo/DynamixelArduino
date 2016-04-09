@@ -14,7 +14,6 @@ dxlMx	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
-getError		KEYWORD2
 ping			KEYWORD2
 action			KEYWORD2
 reset			KEYWORD2
@@ -90,12 +89,18 @@ setGoalTorque		KEYWORD2
 readGoalTorque		KEYWORD2
 setGoalAcceleration	KEYWORD2
 readGoalAcceleration	KEYWORD2
-readDxlWord		KEYWORD2
-readDxlByte		KEYWORD2
-readDxl			KEYWORD2
-writeDxl		KEYWORD2
-writeDxlData		KEYWORD2
-writeDxlRegData		KEYWORD2
+sendDxlCommand		KEYWORD2
+sendDxlWrite		KEYWORD2
+sendDxlRegData		KEYWORD2
+sendDxlRead		KEYWORD2
+dxlDataReady		KEYWORD2
+readDxlError		KEYWORD2
+readDxlResult		KEYWORD2
+isBusy			KEYWORD2
+setDxlTimeout		KEYWORD2
+readDxlTimeout		KEYWORD2
+setDxlReturnDelayTime	KEYWORD2
+readDxlReturnDelayTime	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -112,7 +117,7 @@ DXL_ERR_INSTRUCTION		LITERAL1
 DXL_ERR_TX_FAIL			LITERAL1
 DXL_ERR_RX_FAIL			LITERAL1
 DXL_ERR_TX_ERROR		LITERAL1
-DXL_ERR_RX_WAITING		LITERAL1
+DXL_ERR_RX_LENGTH		LITERAL1
 DXL_ERR_RX_TIMEOUT		LITERAL1
 DXL_ERR_RX_CORRUPT		LITERAL1
 DXL_ERR_ID			LITERAL1

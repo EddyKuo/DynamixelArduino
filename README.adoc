@@ -4,7 +4,7 @@
  This could be achieved using the halfDuplexSerial lib (soft, usig only one wire, or hard, using Tx, Rx and dir pin)
  Limitations:
    - Baudrate is limited 57 600bps ~ 115 200bps for 16Mhz Arduino board with softHalfDuplexSerial, and ~ 400 000bps for 16Mhz Arduino board with hardHalfDuplexSerial
-  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
+  - This library is non blocking, i.e. when a write or a read command occured, it will wait NOT the answer of the servo. The return value is a bool (true when transmit succeed, false if an error occured during transmit)
 
 You can customize servo control by editing the DynamixelConfig.h file.
 The librarie has been written and tested with AX-12 servo & MX-64R, it should work with other Dynamixel servos.

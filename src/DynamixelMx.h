@@ -21,7 +21,7 @@ Written by Akira
  This library implement all the required operation to drive Dynamixel MX servo,
  
  Limitations:
-  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
+  - This library is non blocking, i.e. when a write or a read command occured, it will NOT wait the answer of the servo
   - Baudrate tested up to 400 000bps on 16Mhz Arduino board (Mega 2560), with MAX485 component
 
  documentation for MX actuator is here:
@@ -50,37 +50,37 @@ public:
   //  EEPROM commands
   //
 
-  unsigned short setMultiturnOffset(const byte ID, const short Offset);
-  unsigned short readMultiturnOffset(const byte ID);
+  bool setMultiturnOffset(const byte ID, const short Offset);
+  bool readMultiturnOffset(const byte ID);
 
-  unsigned short setResolutionDivider(const byte  ID, const byte Resolution);
-  byte readResolutionDivider(const byte ID);
+  bool setResolutionDivider(const byte  ID, const byte Resolution);
+  bool readResolutionDivider(const byte ID);
 
   //
   //  RAM commands
   //
- 
-  unsigned short setDGain(const byte  ID, const byte gain);
-  byte readDGain(const byte ID);
 
-  unsigned short setIGain(const byte  ID, const byte gain);
-  byte readIGain(const byte ID);
+  bool setDGain(const byte  ID, const byte gain);
+  bool readDGain(const byte ID);
 
-  unsigned short setPGain(const byte  ID, const byte gain);
-  byte readPGain(const byte ID);
+  bool setIGain(const byte  ID, const byte gain);
+  bool readIGain(const byte ID);
 
-  unsigned short setCurrent(const byte  ID, const unsigned short current);
-  unsigned short readCurrent(const byte ID);
+  bool setPGain(const byte  ID, const byte gain);
+  bool readPGain(const byte ID);
 
-  unsigned short setTorqueControlEnable(const byte ID, const bool Enable);
+  bool setCurrent(const byte  ID, const unsigned short current);
+  bool readCurrent(const byte ID);
+
+  bool setTorqueControlEnable(const byte ID, const bool Enable);
   bool isTorqueControlEnable(const byte ID);
 
-  unsigned short setGoalTorque(const byte  ID, const unsigned short Torque);
-  unsigned short readGoalTorque(const byte ID);
+  bool setGoalTorque(const byte  ID, const unsigned short Torque);
+  bool readGoalTorque(const byte ID);
 
-  unsigned short setGoalAcceleration(const byte  ID, const byte Acceleration);
-  byte readGoalAcceleration(const byte ID);
-
+  bool setGoalAcceleration(const byte  ID, const byte Acceleration);
+  bool readGoalAcceleration(const byte ID);
+  
 };
 
 #endif // DynamixelMx_h

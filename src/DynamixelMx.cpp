@@ -54,54 +54,53 @@ dxlMx::~dxlMx()
 //  EEPROM commands
 //
 
-unsigned short dxlMx::setMultiturnOffset(const byte ID, const short Offset)
-{ return writeDxlData(ID, DXL_ADD_MULTITURN_OFFSET, (const byte*) &Offset, 2 );}   
-unsigned short dxlMx::readMultiturnOffset(const byte ID)
-{ return readDxlWord(ID, DXL_ADD_MULTITURN_OFFSET); } 
+bool dxlMx::setMultiturnOffset(const byte ID, const short Offset)
+{ return sendDxlWrite(ID, DXL_ADD_MULTITURN_OFFSET, (const byte*) &Offset, 2 );}   
+bool dxlMx::readMultiturnOffset(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_MULTITURN_OFFSET , 2); } 
 
-unsigned short dxlMx::setResolutionDivider(const byte  ID, const byte Resolution)
-{ return writeDxlData(ID, DXL_ADD_RESOLUTION_DIVIDER , &Resolution, 1 );}
-byte dxlMx::readResolutionDivider(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_RESOLUTION_DIVIDER);}
+bool dxlMx::setResolutionDivider(const byte  ID, const byte Resolution)
+{ return sendDxlWrite(ID, DXL_ADD_RESOLUTION_DIVIDER , &Resolution, 1 );}
+bool dxlMx::readResolutionDivider(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_RESOLUTION_DIVIDER , 1); } 
 
 //
 //  RAM commands
 //
 
-unsigned short dxlMx::setDGain(const byte  ID, const byte gain)
-{ return writeDxlData(ID, DXL_ADD_D_GAIN , &gain, 1 );}
-byte dxlMx::readDGain(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_D_GAIN);}
+bool dxlMx::setDGain(const byte  ID, const byte gain)
+{ return sendDxlWrite(ID, DXL_ADD_D_GAIN , &gain, 1 );}
+bool dxlMx::readDGain(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_D_GAIN , 1); } 
 
-unsigned short dxlMx::setIGain(const byte  ID, const byte gain)
-{ return writeDxlData(ID, DXL_ADD_I_GAIN , &gain, 1 );}
-byte dxlMx::readIGain(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_I_GAIN);}  
+bool dxlMx::setIGain(const byte  ID, const byte gain)
+{ return sendDxlWrite(ID, DXL_ADD_I_GAIN , &gain, 1 );}
+bool dxlMx::readIGain(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_I_GAIN , 1); } 
 
-unsigned short dxlMx::setPGain(const byte  ID, const byte gain)
-{ return writeDxlData(ID, DXL_ADD_P_GAIN , &gain, 1 );}
-byte dxlMx::readPGain(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_P_GAIN);}
+bool dxlMx::setPGain(const byte  ID, const byte gain)
+{ return sendDxlWrite(ID, DXL_ADD_P_GAIN , &gain, 1 );}
+bool dxlMx::readPGain(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_P_GAIN , 1); } 
 
-unsigned short dxlMx::setCurrent(const byte  ID, const unsigned short current)
-{ return writeDxlData(ID, DXL_ADD_CURRENT ,(const byte*) &current, 2 );}
-unsigned short dxlMx::readCurrent(const byte ID)
-{ return readDxlWord(ID, DXL_ADD_CURRENT); }
+bool dxlMx::setCurrent(const byte  ID, const unsigned short current)
+{ return sendDxlWrite(ID, DXL_ADD_CURRENT ,(const byte*) &current, 2 );}
+bool dxlMx::readCurrent(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_CURRENT , 2); } 
 
-unsigned short dxlMx::setTorqueControlEnable(const byte ID, const bool Enable)
-{ return writeDxlData(ID, DXL_ADD_TORQUE_CONTROL_ENABLE, (const byte*) &Enable, 1 );} 
+bool dxlMx::setTorqueControlEnable(const byte ID, const bool Enable)
+{ return sendDxlWrite(ID, DXL_ADD_TORQUE_CONTROL_ENABLE, (const byte*) &Enable, 1 );} 
 bool dxlMx::isTorqueControlEnable(const byte ID)
-{ return (bool)readDxlByte(ID, DXL_ADD_TORQUE_CONTROL_ENABLE ); } 
+{ return sendDxlRead(ID, DXL_ADD_TORQUE_CONTROL_ENABLE  , 1); } 
 
-unsigned short dxlMx::setGoalTorque(const byte  ID, const unsigned short Torque)
-{ return writeDxlData(ID, DXL_ADD_GOAL_TORQUE ,(const byte*) &Torque, 2 );}
-unsigned short dxlMx::readGoalTorque(const byte ID)
-{ return readDxlWord(ID, DXL_ADD_GOAL_TORQUE); }
+bool dxlMx::setGoalTorque(const byte  ID, const unsigned short Torque)
+{ return sendDxlWrite(ID, DXL_ADD_GOAL_TORQUE ,(const byte*) &Torque, 2 );}
+bool dxlMx::readGoalTorque(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_GOAL_TORQUE , 2); } 
 
-unsigned short dxlMx::setGoalAcceleration(const byte  ID, const byte Acceleration)
-{ return writeDxlData(ID, DXL_ADD_GOAL_ACCELERATION , &Acceleration, 1 );}
-byte dxlMx::readGoalAcceleration(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_GOAL_ACCELERATION);}
-
+bool dxlMx::setGoalAcceleration(const byte  ID, const byte Acceleration)
+{ return sendDxlWrite(ID, DXL_ADD_GOAL_ACCELERATION , &Acceleration, 1 );}
+bool dxlMx::readGoalAcceleration(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_GOAL_ACCELERATION , 1); } 
 
 

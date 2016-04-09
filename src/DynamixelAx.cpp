@@ -25,7 +25,7 @@ Written by Akira
   - The pin should support change interrupts (see halfDuplexSerial lib)
   - Baudrate is limited (57 600bps ~ 115 200bps for 16Mhz Arduino board)
   - 5V Arduino Board (I didn't try with 3.3V board as I didn't have one)
-  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
+  - This library is non blocking, i.e. when a write or a read command occured, it will NOT wait the answer of the servo
 
 For more information, please visit :
 https://github.com/akira215/DynamixelArduino
@@ -55,23 +55,24 @@ dxlAx::~dxlAx()
 //  RAM commands
 //
 
-unsigned short dxlAx::setCWComplianceMargin(const byte  ID, const byte margin)
-{ return writeDxlData(ID, DXL_ADD_CW_COMPLIANCE_MARGIN , &margin, 1 );}
-byte dxlAx::readCWComplianceMargin(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CW_COMPLIANCE_MARGIN);}
 
-unsigned short dxlAx::setCCWComplianceMargin(const byte  ID, const byte margin)
-{ return writeDxlData(ID, DXL_ADD_CCW_COMPLIANCE_MARGIN , &margin, 1 );}
-byte dxlAx::readCCWComplianceMargin(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CCW_COMPLIANCE_MARGIN);}
+bool dxlAx::setCWComplianceMargin(const byte  ID, const byte margin)
+{ return sendDxlWrite(ID, DXL_ADD_CW_COMPLIANCE_MARGIN , &margin, 1 );}
+bool dxlAx::readCWComplianceMargin(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_CW_COMPLIANCE_MARGIN , 1); } 
 
-unsigned short dxlAx::setCWComplianceSlope(const byte  ID, const byte slope)
-{ return writeDxlData(ID, DXL_ADD_CW_COMPLIANCE_SLOPE , &slope, 1 );}
-byte dxlAx::readCWComplianceSlope(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CW_COMPLIANCE_SLOPE);}
+bool dxlAx::setCCWComplianceMargin(const byte  ID, const byte margin)
+{ return sendDxlWrite(ID, DXL_ADD_CCW_COMPLIANCE_MARGIN , &margin, 1 );}
+bool dxlAx::readCCWComplianceMargin(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_CCW_COMPLIANCE_MARGIN , 1); } 
 
-unsigned short dxlAx::setCCWComplianceSlope(const byte  ID, const byte slope)
-{ return writeDxlData(ID, DXL_ADD_CCW_COMPLIANCE_SLOPE , &slope, 1 );}
-byte dxlAx::readCCWComplianceSlope(const byte ID)
-{ return readDxlByte(ID, DXL_ADD_CCW_COMPLIANCE_SLOPE);}
+bool dxlAx::setCWComplianceSlope(const byte  ID, const byte slope)
+{ return sendDxlWrite(ID, DXL_ADD_CW_COMPLIANCE_SLOPE , &slope, 1 );}
+bool dxlAx::readCWComplianceSlope(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_CW_COMPLIANCE_SLOPE , 1); } 
+
+bool dxlAx::setCCWComplianceSlope(const byte  ID, const byte slope)
+{ return sendDxlWrite(ID, DXL_ADD_CCW_COMPLIANCE_SLOPE , &slope, 1 );}
+bool dxlAx::readCCWComplianceSlope(const byte ID)
+{ return sendDxlRead(ID, DXL_ADD_CCW_COMPLIANCE_SLOPE , 1); } 
 

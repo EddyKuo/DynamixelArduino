@@ -23,7 +23,7 @@ Written by Akira
 
  Limitations:
   - Baudrate is limited 57 600bps ~ 115 200bps for 16Mhz Arduino board with softHalfDuplexSerial, and ~ 400 000bps for 16Mhz Arduino board with hardHalfDuplexSerial
-  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
+  - This library is non blocking, i.e. when a write or a read command occured, it will NOT wait the answer of the servo
 */
 #ifndef Dynamixel_h
 #define Dynamixel_h
@@ -40,10 +40,19 @@ Written by Akira
 class dxl
 {
 private:
-    halfDuplexSerial* _port;    // Serial port to be used to communicate with dynamixel
+  halfDuplexSerial* _port;               // Serial port to be used to communicate with dynamixel
+  unsigned short  _error;                // Store the last error
+  byte _nByteToBeRead;                   // Used to check when Rx packet is complete
+  byte _currentId;                       // Used to check if the rx packet comes from the correct servo
+  unsigned long _timeout;                // Store Rx timeout (default 1000ms)
+  unsigned long _currentTimeout;         // To be compared with millis();
+  unsigned long _returnDelayTime;        // Store the return time of Dynamixel servo (dfault 1000 µs)
+  unsigned long _currentReturnDelayTime; // this variable assume that dxlDataReady();is called periodically
+  unsigned short _dxlResult;             // Dxl read will be stored here
 
-  unsigned short  _error;
-  void serialFlush();
+  // This is the only function to write on the serial port
+  bool writeRaw( const byte *sentence, const byte nByteToBeWritten);
+  unsigned short readDxlData(); 		      // the only function to read on serial port
 
 public:
   
@@ -51,93 +60,99 @@ public:
   dxl(halfDuplexSerial* port);
   ~dxl();
   void begin(const unsigned long speed);
-  unsigned short getError() const { return _error; }
 
-  unsigned short ping(const byte  ID);    // ping the servo
-  unsigned short action(const byte  ID);  // Excecute action written in REG_WRITE servo register
-  unsigned short reset(const byte  ID);   // Reset the servo to factory default setting
-  unsigned short reboot(const byte  ID);  // Reboot the servo
+  bool ping(const byte  ID);    // ping the servo
+  bool action(const byte  ID);  // Excecute action written in REG_WRITE servo register. A status packet is receive, although the documentation don't mention it
+  bool reset(const byte  ID);   // Reset the servo to factory default setting
+  bool reboot(const byte  ID);  // Reboot the servo (not supported by mx servos)
 
   //
   //  EEPROM commands
   //
 
-  unsigned short readModelNumber(const byte ID);
-  byte readFirmware(const byte ID);
+  bool readModelNumber(const byte ID);
+  bool readFirmware(const byte ID);
 
-  unsigned short setId(const byte  ID, const byte newID);
-  byte  readId(const byte ID);    // Is this really usefull ?
+  bool setId(const byte  ID, const byte newID);
+  bool readId(const byte ID);    // Is this really usefull ?
   
-  unsigned short setBaudRate(const byte  ID, const byte baudRate);
-  byte  readBaudRate(const byte ID); 
+  bool setBaudRate(const byte  ID, const byte baudRate);
+  bool readBaudRate(const byte ID); 
   
-  unsigned short setReturnDelayTime(const byte  ID, const byte returnDelayTime);
-  byte readReturnDelayTime(const byte ID);
+  bool setReturnDelayTime(const byte  ID, const byte returnDelayTime);
+  bool readReturnDelayTime(const byte ID);
 
-  unsigned short setCWAngleLimit(const byte  ID, const unsigned short angle);
-  unsigned short setCCWAngleLimit(const byte  ID, const unsigned short angle);
+  bool setCWAngleLimit(const byte  ID, const unsigned short angle);
+  bool setCCWAngleLimit(const byte  ID, const unsigned short angle);
 
-  unsigned short readCWAngleLimit(const byte ID);
-  unsigned short readCCWAngleLimit(const byte ID);
+  bool readCWAngleLimit(const byte ID);
+  bool readCCWAngleLimit(const byte ID);
 
-  unsigned short setMaxTemperature(const byte  ID, const byte maxTemperature);
-  byte readMaxTemperature(const byte ID);
+  bool setMaxTemperature(const byte  ID, const byte maxTemperature);
+  bool readMaxTemperature(const byte ID);
 
-  unsigned short setMinVoltage(const byte  ID, const byte minVoltage);
-  byte readMinVoltage(const byte ID);
+  bool setMinVoltage(const byte  ID, const byte minVoltage);
+  bool readMinVoltage(const byte ID);
 
-  unsigned short setMaxVoltage(const byte  ID, const byte maxVoltage);
-  byte readMaxVoltage(const byte ID);
+  bool setMaxVoltage(const byte  ID, const byte maxVoltage);
+  bool readMaxVoltage(const byte ID);
 
-  unsigned short setMaxTorque(const byte  ID, const unsigned short maxTorque);
-  unsigned short readMaxTorque(const byte ID);
+  bool setMaxTorque(const byte  ID, const unsigned short maxTorque);
+  bool readMaxTorque(const byte ID);
 
-  unsigned short setStatusReturnLevel(const byte  ID, const byte Status);
-  byte readStatusReturnLevel(const byte ID);
+  bool setStatusReturnLevel(const byte  ID, const byte Status);
+  bool readStatusReturnLevel(const byte ID);
   
-  unsigned short setAlarmLed(const byte  ID, const byte Status);
-  byte readAlarmLed(const byte ID);
+  bool setAlarmLed(const byte  ID, const byte Status);
+  bool readAlarmLed(const byte ID);
 
-  unsigned short setAlarmShutdown(const byte  ID, const byte Status);
-  byte readAlarmShutdown(const byte ID);
+  bool setAlarmShutdown(const byte  ID, const byte Status);
+  bool readAlarmShutdown(const byte ID);
 
   //
   //  RAM commands
   //
-  unsigned short setTorqueEnable(const byte  ID, const bool Status);
+  bool setTorqueEnable(const byte  ID, const bool Status);
   bool readTorqueEnable(const byte ID);
 
-  unsigned short setLedEnable(const byte  ID, const bool Status);
+  bool setLedEnable(const byte  ID, const bool Status);
   bool readLedEnable(const byte  ID);
 
-  unsigned short setGoalPosition(const byte ID, const short Position);
-  unsigned short setGoalPositionAtSpeed(const byte ID, const short Position, const short Speed);
-  unsigned short setMovingSpeed(const byte ID, const short Speed);
-  unsigned short setTorqueLimit(const byte ID, const short torque);
+  bool setGoalPosition(const byte ID, const short Position);
+  bool setGoalPositionAtSpeed(const byte ID, const short Position, const short Speed);
+  bool setMovingSpeed(const byte ID, const short Speed);
+  bool setTorqueLimit(const byte ID, const short torque);
 
-  unsigned short readPresentPosition(const byte ID);
-  unsigned short readPresentSpeed(const byte ID);
-  unsigned short readPresentLoad(const byte ID);
+  bool readPresentPosition(const byte ID);
+  bool readPresentSpeed(const byte ID);
+  bool readPresentLoad(const byte ID);
 
-  byte readVoltage(const byte ID);
-  byte readTemperature(const byte ID);
+  bool readVoltage(const byte ID);
+  bool readTemperature(const byte ID);
   bool isRegistered(const byte ID);
   bool isMoving(const byte ID);
 
-  unsigned short setEEPROMLock(const byte ID, const bool lock);
+  bool setEEPROMLock(const byte ID, const bool lock);
   bool isEEPROMLock(const byte ID);
 
-  unsigned short setPunch(const byte  ID, const unsigned short current);
-  unsigned short readPunch(const byte ID);
+  bool setPunch(const byte  ID, const unsigned short current);
+  bool readPunch(const byte ID);
 
   // Low level public methods
-  unsigned short readDxlWord(const byte ID, const byte dxlAddress);
-  byte readDxlByte(const byte ID, const byte dxlAddress);
 
-  unsigned short readDxl(const byte ID, const byte dxlAddress, byte *result, const byte nByteToBeRead);  // read operation will be stored in result
-  unsigned short writeDxl(const byte ID, const byte dxlCommand, const byte *params, const byte nByteToBeWritten);
-  unsigned short writeDxlData(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten);
-  unsigned short writeDxlRegData(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten );
+  bool sendDxlCommand(const byte ID, const byte dxlCommand);
+  bool sendDxlWrite(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten);
+  bool sendDxlRegData(const byte ID, const byte dxlAddress, const byte *params, const byte nByteToBeWritten);
+  bool sendDxlRead(const byte ID, const byte dxlAddress, const byte nByteToBeRead);
+  bool dxlDataReady();
+  unsigned short readDxlError();                      // return the error or DXL_ERR_SUCCESS of the last operation
+  unsigned short readDxlResult();                     // return the value read of the last operation 
+  
+  bool isBusy();
+  void setDxlTimeout(const unsigned long timeout) { _timeout = timeout; }
+  unsigned long readDxlTimeout() { return _timeout; }
+  void setDxlReturnDelayTime(const unsigned long returnDelayTime) { _returnDelayTime = returnDelayTime; }
+  unsigned long readDxlReturnDelayTime() { return _returnDelayTime; }  
   
 };
 

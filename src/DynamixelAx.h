@@ -25,7 +25,7 @@ This library is free software; you can redistribute it and/or
   - The pin should support change interrupts (see halfDuplexSerial lib)
   - Baudrate is limited (57 600bps ~ 115 200bps for 16Mhz Arduino board)
   - 5V Arduino Board (I didn't try with 3.3V board as I didn't have one)
-  - This library is blocking, i.e. when a write or a read command occured, it will wait the answer of the servo
+  - This library is non blocking, i.e. when a write or a read command occured, it will NOT wait the answer of the servo
 
 For more information, please visit :
 https://github.com/akira215/DynamixelArduino
@@ -49,17 +49,17 @@ public:
   dxlAx(halfDuplexSerial* port);
   ~dxlAx();
  
-  unsigned short setCWComplianceMargin(const byte  ID, const byte margin);
-  byte readCWComplianceMargin(const byte ID);
+  bool setCWComplianceMargin(const byte  ID, const byte margin);
+  bool readCWComplianceMargin(const byte ID);
 
-  unsigned short setCCWComplianceMargin(const byte  ID, const byte margin);
-  byte readCCWComplianceMargin(const byte ID);
+  bool setCCWComplianceMargin(const byte  ID, const byte margin);
+  bool readCCWComplianceMargin(const byte ID);
 
-  unsigned short setCWComplianceSlope(const byte  ID, const byte slope);
-  byte readCWComplianceSlope(const byte ID);
+  bool setCWComplianceSlope(const byte  ID, const byte slope);
+  bool readCWComplianceSlope(const byte ID);
 
-  unsigned short setCCWComplianceSlope(const byte  ID, const byte slope);
-  byte readCCWComplianceSlope(const byte ID);
+  bool setCCWComplianceSlope(const byte  ID, const byte slope);
+  bool readCCWComplianceSlope(const byte ID);
 
 };
 

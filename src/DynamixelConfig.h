@@ -46,7 +46,7 @@ This library is free software; you can redistribute it and/or
 #define DXL_ERR_TX_FAIL             (0x100)   // No header found during transmit
 #define DXL_ERR_RX_FAIL             (0x200)   // No header found during receive
 #define DXL_ERR_TX_ERROR            (0x400)
-#define DXL_ERR_RX_WAITING          (0x800)
+#define DXL_ERR_RX_LENGTH           (0x800)   // The length of the response doesn't match 
 #define DXL_ERR_RX_TIMEOUT          (0x1000)  // Time out during receive operation
 #define DXL_ERR_RX_CORRUPT          (0x2000)  // Checksum error
 #define DXL_ERR_ID                  (0x4000)  // Wrong ID response after instruction packet
