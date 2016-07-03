@@ -35,6 +35,7 @@ written by Akira
 dxlMx dxlCom(&hdSerial1); //  using Serial1 (Tx 18, Rx 19)
 
 String _readString;         // Input string from serial monitor
+bool _strComplete = false;
 int _id = 2;  
  
 
@@ -53,7 +54,11 @@ void setup() {
   Serial.println("Starting COM!");
 
   pinMode(19,INPUT_PULLUP);  // To be replaced by hardware pull up
-  hdSerial1.setDirPin(53);   // dirPin pin 53, 
+
+#if !defined  (__SAM3X8E__)
+  hdSerial1.setDirPin(53);   // dirPin pin 53,
+#endif
+
 
   dxlCom.begin(400000); 
 
@@ -63,14 +68,19 @@ void setup() {
 
 void loop()
 { 
-  while (Serial.available()) {
-    char c = Serial.read();  //gets one byte from serial buffer
-    _readString += c; //makes the string readString
-    delay(2);  //slow looping to allow buffer to fill with next character
+  while (Serial.available())
+  {
+    char inputChar = Serial.read();  //gets one byte from serial buffer
+    _readString += inputChar; //makes the string readString
+
+    if (inputChar=='\r')
+      _strComplete = true;
+
   }
 
-  if (_readString.length() >0) 
+  if (_strComplete)
   {
+    _strComplete = false;
     if (_readString.startsWith("ID"))
     {
        _readString.remove(0, 2);

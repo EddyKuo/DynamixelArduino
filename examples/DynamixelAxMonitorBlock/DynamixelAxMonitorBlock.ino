@@ -37,6 +37,7 @@ softHalfDuplexSerial port(8); // data pin 8
 dxlAx dxlCom(&port); 
 
 String _readString;         // Input string from serial monitor
+bool _strComplete = false;
 int _id = 1;                // Default Dynamixel servo ID  
  
 
@@ -62,14 +63,19 @@ void setup() {
 
 void loop()
 { 
-  while (Serial.available()) {
-    char c = Serial.read();  //gets one byte from serial buffer
-    _readString += c; //makes the string readString
-    delay(2);  //slow looping to allow buffer to fill with next character
+  while (Serial.available())
+  {
+    char inputChar = Serial.read();  //gets one byte from serial buffer
+    _readString += inputChar; //makes the string readString
+
+    if (inputChar=='\r')
+      _strComplete = true;
+
   }
 
-  if (_readString.length() >0) 
+  if (_strComplete)
   {
+    _strComplete = false;
     if (_readString.startsWith("ID"))
     {
        _readString.remove(0, 2);
