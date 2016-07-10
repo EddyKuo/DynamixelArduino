@@ -1,21 +1,21 @@
 /*
 DynamixelMxMonitorBlock.ino
-written by Akira 
+written by Akira
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
- 
- This library is distributed in the hope that it will be useful,  
+
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- 
+
  *****************************************************************************
  Decription:
  This library implement all the required operation to drive Dynamixel servo,
@@ -27,19 +27,19 @@ written by Akira
   - Check that the board is properly grounded with dynamixel power supply.
   - Please check the servo baudrate, it has been set to 57 600bps here.
   - Take care that the defaut servo ID is 1.
-  In this example, we will wait after each Dynamixel command the answer of the servo. 
+  In this example, we will wait after each Dynamixel command the answer of the servo.
   The code is simplier than in non blocking implemantation, but it will block any other code (except interrupt) during this time.
 */
 #include <SoftHalfDuplexSerial.h>
 #include <DynamixelAx.h>
 
 softHalfDuplexSerial port(8); // data pin 8
-dxlAx dxlCom(&port); 
+dxlAx dxlCom(&port);
 
 String _readString;         // Input string from serial monitor
 bool _strComplete = false;
-int _id = 1;                // Default Dynamixel servo ID  
- 
+int _id = 1;                // Default Dynamixel servo ID
+
 
 void printServoId(String msg);
 void printDxlResult();
@@ -55,20 +55,20 @@ void setup() {
 
   Serial.println("Starting COM!");
 
-  dxlCom.begin(57600); 
+  dxlCom.begin(57600);
 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 
 void loop()
-{ 
+{
   while (Serial.available())
   {
     char inputChar = Serial.read();  //gets one byte from serial buffer
     _readString += inputChar; //makes the string readString
 
-    if (inputChar=='\r')
+    if (inputChar=='\n')
       _strComplete = true;
 
   }
@@ -93,7 +93,7 @@ void loop()
     {
       dxlCom.isRegistered(_id);
       while(!dxlCom.dxlDataReady());          // waiting the answer of servo
-      printDxlError(dxlCom.readDxlError());  
+      printDxlError(dxlCom.readDxlError());
       if (dxlCom.readDxlResult())               // if it is registred
       {
         printServoId("Execute reg command in");
@@ -152,9 +152,9 @@ void loop()
       printServoId("Moving ");
       dxlCom.setGoalPosition(_id,Position);
       printDxlResult();
-      
+
       bool isMoving = true;
-      
+
       while (isMoving)
       {
         unsigned short error = DXL_ERR_SUCCESS;
@@ -212,9 +212,9 @@ void loop()
       dxlCom.sendDxlRegData(_id, DXL_ADD_GOAL_POSITION, (const byte*) &Position, 2 );
       printDxlResult();
     }
- 
+
     _readString=""; //empty for next input
-  } 
+  }
 
 }
 
@@ -273,6 +273,3 @@ void printDxlError(unsigned short dxlError)
     Serial.println();
   }
 }
-
-
-

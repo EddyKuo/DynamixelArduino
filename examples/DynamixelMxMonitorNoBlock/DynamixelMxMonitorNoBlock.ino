@@ -1,21 +1,21 @@
 /*
 DynamixelMxMonitorNoBlock.ino
-written by Akira 
+written by Akira
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
- 
- This library is distributed in the hope that it will be useful,  
+
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- 
+
  *****************************************************************************
  Decription:
  This library implement all the required operation to drive Dynamixel servo,
@@ -38,7 +38,7 @@ dxlMx dxlCom(&hdSerial1); //  using Serial1 (Tx 18, Rx 19)
 
 String _readString;         // Input string from serial monitor
 bool _strComplete = false;
-int _id = 2;  
+int _id = 2;
 bool _trackDxlPosition = false;
 byte _trackingState = TRACKING_IDLE;
 bool _action = false;
@@ -63,17 +63,17 @@ void setup() {
 
   // On Arduino Due, only the corresponding USART RTS pin is used to drive the controller
 #if !defined  (__SAM3X8E__)
-  hdSerial1.setDirPin(53);   // dirPin pin 53, 
+  hdSerial1.setDirPin(53);   // dirPin pin 53,
 #endif
 
-  dxlCom.begin(400000); 
+  dxlCom.begin(400000);
 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 
 void loop()
-{ 
+{
   processUserInput();
   processDxlData();
 }
@@ -99,8 +99,8 @@ void processDxlData()
         else
           printDxlError(dxlCom.readDxlError());
       }
-    
-    
+
+
   } // dxlCom.dxlDataReady()
 }
 
@@ -108,17 +108,17 @@ void trackPosition()
 {
    if(dxlCom.isBusy())
     return;
-          
+
    //unsigned short dxlError = dxlCom.readDxlError();
    if(dxlCom.readDxlError() == DXL_ERR_SUCCESS)
    {
-      switch (_trackingState) 
+      switch (_trackingState)
       {
               case TRACKING_IDLE:
                 dxlCom.isMoving(_id);
                 _trackingState = TRACKING_MOVING;
               break;
-                
+
               case TRACKING_MOVING:
                 if(dxlCom.readDxlResult())            // dxl is moving
                 {
@@ -131,16 +131,16 @@ void trackPosition()
                   _trackingState = TRACKING_IDLE;
                 }
               break;
-                
+
               case TRACKING_POSITION:
                 Serial.print("Pos : ");  Serial.println(dxlCom.readDxlResult());
                 dxlCom.isMoving(_id);
                 _trackingState = TRACKING_MOVING;
-              break;   
+              break;
       } //switch (_trackingState)
    }    // if(dxlError == DXL_ERR_SUCCESS)
    else
-      printDxlError(dxlCom.readDxlError());          
+      printDxlError(dxlCom.readDxlError());
 }
 
 void action()
@@ -161,7 +161,7 @@ void action()
       Serial.println();
     }
   else
-    printDxlError(dxlCom.readDxlError()); 
+    printDxlError(dxlCom.readDxlError());
 }
 
 void processUserInput()
@@ -171,7 +171,7 @@ void processUserInput()
     char inputChar = Serial.read();  //gets one byte from serial buffer
     _readString += inputChar; //makes the string readString
 
-    if (inputChar=='\r')
+    if (inputChar=='\n')
       _strComplete = true;
 
   }
@@ -267,9 +267,9 @@ void processUserInput()
       printServoId("Write command (type 'action' to execute) in REG register of ");
       dxlCom.sendDxlRegData(_id, DXL_ADD_GOAL_POSITION, (const byte*) &Position, 2 );
     }
- 
+
     _readString=""; //empty for next input
-  } 
+  }
 }
 void printServoId(String msg)
 {
@@ -317,6 +317,3 @@ void printDxlError(unsigned short dxlError)
     Serial.println();
   }
 }
-
-
-
