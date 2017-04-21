@@ -1,21 +1,21 @@
 /*
-DynamixelConfig.h 
-Written by Akira 
+DynamixelConfig.h
+Written by Akira
 
 This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
- 
- This library is distributed in the hope that it will be useful,  
+
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- 
+
  *****************************************************************************
  Decription:
  This file contains all definition to drive Dynamixel servos.
@@ -35,7 +35,7 @@ This library is free software; you can redistribute it and/or
 
 #define DXL_ERR_SUCCESS             (0x00)    // No header found during transmit
 
-#define DXL_ERR_VOLTAGE             (0x01)    // When the applied voltage is out of the range of operating voltage set in the Control table, 
+#define DXL_ERR_VOLTAGE             (0x01)    // When the applied voltage is out of the range of operating voltage set in the Control table,
 #define DXL_ERR_ANGLE               (0x02)    // When Goal Position is written out of the range from CW Angle Limit to CCW Angle Limit
 #define DXL_ERR_OVERHEATING         (0x04)    // When internal temperature of Dynamixel is out of the range of operating temperature set in the Control table
 #define DXL_ERR_RANGE               (0x08)    // When a command is out of the range for use
@@ -46,7 +46,7 @@ This library is free software; you can redistribute it and/or
 #define DXL_ERR_TX_FAIL             (0x100)   // No header found during transmit
 #define DXL_ERR_RX_FAIL             (0x200)   // No header found during receive
 #define DXL_ERR_TX_ERROR            (0x400)
-#define DXL_ERR_RX_LENGTH           (0x800)   // The length of the response doesn't match 
+#define DXL_ERR_RX_LENGTH           (0x800)   // The length of the response doesn't match
 #define DXL_ERR_RX_TIMEOUT          (0x1000)  // Time out during receive operation
 #define DXL_ERR_RX_CORRUPT          (0x2000)  // Checksum error
 #define DXL_ERR_ID                  (0x4000)  // Wrong ID response after instruction packet
@@ -91,17 +91,17 @@ This library is free software; you can redistribute it and/or
 #define DXL_ADD_TORQUE_ENABLE         (0x18)
 #define DXL_ADD_LED                   (0x19)
 #define DXL_ADD_GOAL_POSITION         (0x1E)
-#define DXL_ADD_MOVING_SPEED          (0X20)
-#define DXL_ADD_TORQUE_LIMIT          (0X22)
-#define DXL_ADD_PRESENT_POSITION      (0X24)
-#define DXL_ADD_PRESENT_SPEED         (0X26)
-#define DXL_ADD_PRESENT_LOAD          (0X28)
-#define DXL_ADD_PRESENT_VOLTAGE       (0X2A)
+#define DXL_ADD_MOVING_SPEED          (0x20)
+#define DXL_ADD_TORQUE_LIMIT          (0x22)
+#define DXL_ADD_PRESENT_POSITION      (0x24)
+#define DXL_ADD_PRESENT_SPEED         (0x26)
+#define DXL_ADD_PRESENT_LOAD          (0x28)
+#define DXL_ADD_PRESENT_VOLTAGE       (0x2A)
 #define DXL_ADD_PRESENT_TEMPERATURE   (0x2B)
-#define DXL_ADD_REGISTERED            (0X2C)
-#define DXL_ADD_MOVING                (0X2E)
-#define DXL_ADD_LOCK                  (0X2F)
-#define DXL_ADD_PUNCH                 (0X30)
+#define DXL_ADD_REGISTERED            (0x2C)
+#define DXL_ADD_MOVING                (0x2E)
+#define DXL_ADD_LOCK                  (0x2F)
+#define DXL_ADD_PUNCH                 (0x30)
 
 
 /**************************************************************/
