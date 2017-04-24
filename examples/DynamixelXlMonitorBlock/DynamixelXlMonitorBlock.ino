@@ -22,21 +22,23 @@ written by Akira
  Please visit http://support.robotis.com/en/product/dynamixel/dxl_communication.htm to understand Dynamixel communication protocol
 
  Hardware:
-  - This example use Serial1 port, so an Arduino with this port is required. UART Tx & Rx pin should be respectively connected to MAX485 DI & RO pin.
-  - Pin 53 is used to switch between Tx & Rx mode. It should be connected to !RE & DE simultaneously.
-  - Please check the servo baudrate, it has been set to 400 000bps here.
-  - Take care that the defaut servo ID is 2.
+  - This example use softHalfDuplexSerial library, check that the connected data pin support change interrupt
+  - Pin 8 is used in this example to communicate with dynamixel servos (only one wire)
+  - Check that the board is properly grounded with dynamixel power supply.
+  - Please check the servo baudrate, it has been set to 57 600bps here.
+  - Take care that the defaut servo ID is 1.
   In this example, we will wait after each Dynamixel command the answer of the servo.
   The code is simplier than in non blocking implemantation, but it will block any other code (except interrupt) during this time.
 */
-#include <HardHalfDuplexSerial.h>
+#include <SoftHalfDuplexSerial.h>
 #include <DynamixelXl.h>
 
-dxlMx dxlCom(&hdSerial1); //  using Serial1 (Tx 18, Rx 19)
+softHalfDuplexSerial port(10); // data pin 10
+dxlXl dxlCom(&port);
 
 String _readString;         // Input string from serial monitor
 bool _strComplete = false;
-int _id = 2;
+int _id = 1;                // Default Dynamixel servo ID
 
 
 void printServoId(String msg);
@@ -46,21 +48,14 @@ void printDxlError(unsigned short dxlError);
 void setup() {
 
   // Open serial communications and wait for port to open (PC communication)
-  Serial.begin(57600);
+  Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
   Serial.println("Starting COM!");
 
-  pinMode(19,INPUT_PULLUP);  // To be replaced by hardware pull up
-
-#if !defined  (__SAM3X8E__)
-  hdSerial1.setDirPin(53);   // dirPin pin 53,
-#endif
-
-
-  dxlCom.begin(400000);
+  dxlCom.begin(115200);
 
 }
 
@@ -187,6 +182,14 @@ void loop()
       unsigned short Speed = _readString.toInt();  //convert readString into a number
       printServoId("Set speed of ");
       dxlCom.setMovingSpeed(_id,Speed);
+      printDxlResult();
+    }
+    else if (_readString.startsWith("torque"))
+    {
+      _readString.remove(0, 6);
+      unsigned short torque = _readString.toInt();  //convert readString into a number
+      printServoId("Set torque of ");
+      dxlCom.setTorqueLimit(_id,torque);
       printDxlResult();
     }
     else if (_readString.startsWith("voltage"))

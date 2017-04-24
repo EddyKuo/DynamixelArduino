@@ -76,34 +76,34 @@ bool dxlXl::readGoalTorque(const byte ID)
 
 
 
-bool dxl::readXlPresentPosition(const byte ID)
+bool dxlXl::readXlPresentPosition(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_PRESENT_POSITION , 2); }
 
-bool dxl::readXlPresentSpeed(const byte ID)
+bool dxlXl::readXlPresentSpeed(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_PRESENT_SPEED , 2); }
 
-bool dxl::readXlPresentLoad(const byte ID)
+bool dxlXl::readXlPresentLoad(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_PRESENT_LOAD , 2); }
 
-bool  dxl::readXlVoltage(const byte ID)
+bool dxlXl::readXlVoltage(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_PRESENT_VOLTAGE , 1); }
 
-bool dxl::readXlTemperature(const byte ID)
+bool dxlXl::readXlTemperature(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_PRESENT_TEMPERATURE, 1); }
 
-bool dxl::isXlRegistered(const byte ID)
+bool dxlXl::isXlRegistered(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_REGISTERED , 1); }
 
-bool dxl::isXlMoving(const byte ID)
+bool dxlXl::isXlMoving(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_MOVING , 1); }
 
-bool dxl::setXlEEPROMLock(const byte ID, const bool lock)
+bool dxlXl::setXlEEPROMLock(const byte ID, const bool lock)
 { return sendDxlWrite(ID, DXL_XL_ADD_LOCK, (const byte*) &lock, 1 );}
-bool dxl::isXlEEPROMLock(const byte ID)
+bool dxlXl::isXlEEPROMLock(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_LOCK , 1); }
 
-bool dxl::setXlPunch(const byte  ID, const unsigned short current)
+bool dxlXl::setXlPunch(const byte  ID, const unsigned short current)
 { return sendDxlWrite(ID, DXL_XL_ADD_PUNCH ,(const byte*) &current, 2 );}
-bool dxl::readXlPunch(const byte ID)
+bool dxlXl::readXlPunch(const byte ID)
 { return sendDxlRead(ID, DXL_XL_ADD_PUNCH , 2); }
 

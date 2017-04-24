@@ -18,9 +18,9 @@ Written by Akira
 
  *****************************************************************************
  Decription:
- This file contains all definition to drive Dynamixel servos (actually MX servos).
+ This file contains all definition to drive Dynamixel servos (actually XL servos).
  You should modify the value according to your servo specification.
- Please visit http://support.robotis.com/en/product/dynamixel/mx_series/mx-64.htm for MX actuators description
+ Please visit http://support.robotis.com/en/product/dynamixel/XL_series/XL-64.htm for XL actuators description
  and http://support.robotis.com/en/product/dynamixel/dxl_communication.htm to understand Dynamixel communication protocol
 */
 
